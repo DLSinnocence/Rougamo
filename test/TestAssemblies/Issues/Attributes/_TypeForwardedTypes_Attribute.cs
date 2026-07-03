@@ -4,7 +4,7 @@ using System.Collections.Generic;
 
 namespace Issues.Attributes;
 
-public class _112_Attribute : MoAttribute
+public class _TypeForwardedTypes_Attribute : MoAttribute
 {
     public override void OnEntry(MethodContext context)
     {

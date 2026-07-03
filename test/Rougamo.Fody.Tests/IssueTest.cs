@@ -347,9 +347,9 @@ namespace Rougamo.Fody.Tests
         }
 
         [Fact]
-        public async Task Issue112Test()
+        public async Task TypeForwardedTypesTest()
         {
-            var instance = Assembly.GetInstance(nameof(Issue112));
+            var instance = Assembly.GetInstance(nameof(TypeForwardedTypes));
             var logs = new List<string>();
 
             await (ValueTask)instance.ValueTaskAsync(logs);
@@ -361,8 +361,8 @@ namespace Rougamo.Fody.Tests
             Assert.Equal(["OnEntry", "AsyncEnumerable", "OnSuccess", "OnExit"], logs);
             logs.Clear();
 
-            object rawInstance = Assembly.GetInstance(nameof(Issue112), false);
-            Issue112.ReadOnlySpanInDelegate readOnlySpanIn = Assembly.GetMethodDelegate<Issue112.ReadOnlySpanInDelegate>(rawInstance, nameof(Issue112.ReadOnlySpanIn));
+            object rawInstance = Assembly.GetInstance(nameof(TypeForwardedTypes), false);
+            TypeForwardedTypes.ReadOnlySpanInDelegate readOnlySpanIn = Assembly.GetMethodDelegate<TypeForwardedTypes.ReadOnlySpanInDelegate>(rawInstance, nameof(TypeForwardedTypes.ReadOnlySpanIn));
             var pIn = new ReadOnlySpan<char>("abc".ToCharArray());
             var str = readOnlySpanIn(logs, pIn);
             Assert.Equal(pIn.ToString(), str);
