@@ -204,45 +204,7 @@ namespace Rougamo.Context
 
         private static MethodBase ResolveMethod(MethodBase method)
         {
-            if (method == null) return null!;
-
-            method = ResolveStateMachineMethod(method);
-            return method;
-        }
-
-        private static MethodBase ResolveStateMachineMethod(MethodBase method)
-        {
-            if (method.Name != "MoveNext") return method;
-
-            var stateMachineType = method.DeclaringType;
-            var declaringType = stateMachineType?.DeclaringType;
-            if (stateMachineType == null || declaringType == null) return method;
-
-            const BindingFlags flags = BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance | BindingFlags.Static;
-            foreach (var candidate in declaringType.GetMethods(flags))
-            {
-                var attributes = candidate.GetCustomAttributes(inherit: false);
-                foreach (var attribute in attributes)
-                {
-                    var attrType = attribute.GetType();
-                    var fullName = attrType.FullName;
-                    if (fullName != "System.Runtime.CompilerServices.AsyncStateMachineAttribute" &&
-                        fullName != "System.Runtime.CompilerServices.IteratorStateMachineAttribute" &&
-                        fullName != "System.Runtime.CompilerServices.AsyncIteratorStateMachineAttribute")
-                    {
-                        continue;
-                    }
-
-                    var stateMachineTypeProperty = attrType.GetProperty("StateMachineType", BindingFlags.Public | BindingFlags.Instance);
-                    if (stateMachineTypeProperty?.GetValue(attribute) is Type candidateStateMachineType &&
-                        candidateStateMachineType == stateMachineType)
-                    {
-                        return candidate;
-                    }
-                }
-            }
-
-            return method;
+            return method ?? null!;
         }
     }
 }
