@@ -345,5 +345,28 @@ namespace Rougamo.Fody.Tests
 
             Assert.Equal(["OnEntry", "OnSuccess", "OnExit"], logs);
         }
+
+        [Fact]
+        public async Task Issue112Test()
+        {
+            var instance = Assembly.GetInstance(nameof(Issue112));
+            var logs = new List<string>();
+
+            await (ValueTask)instance.ValueTaskAsync(logs);
+            Assert.Equal(["OnEntry", "ValueTaskAsync", "OnSuccess", "OnExit"], logs);
+            logs.Clear();
+
+            var asyncEnumerable = (IAsyncEnumerable<int>)instance.AsyncEnumerable(logs);
+            await foreach (var item in asyncEnumerable) ;
+            Assert.Equal(["OnEntry", "AsyncEnumerable", "OnSuccess", "OnExit"], logs);
+            logs.Clear();
+
+            object rawInstance = Assembly.GetInstance(nameof(Issue112), false);
+            Issue112.ReadOnlySpanInDelegate readOnlySpanIn = Assembly.GetMethodDelegate<Issue112.ReadOnlySpanInDelegate>(rawInstance, nameof(Issue112.ReadOnlySpanIn));
+            var pIn = new ReadOnlySpan<char>("abc".ToCharArray());
+            var str = readOnlySpanIn(logs, pIn);
+            Assert.Equal(pIn.ToString(), str);
+            Assert.Equal(["OnEntry", "OnSuccess", "OnExit"], logs);
+        }
     }
 }
